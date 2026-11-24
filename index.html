@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Duitku">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#2f6fed">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%92%B8%3C/text%3E%3C/svg%3E">
+<title>Duitku – Cash Flow Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#dff0fa;--card:#fff;--line:#0d2233;--sh:#0d2233;--tx:#0d2233;--mu:#5b7186;--y:#fbbf24;--b:#2f6fed;--t:#5ce1d0;--p:#ff8fb8;--r:#e0341c;--g:#0f9d58;--in:#eaf4fb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1324;--card:#14223f;--line:#e9f0ff;--sh:#2f6fed;--tx:#f2f6ff;--mu:#9db0d0;--r:#ff7a66;--g:#4ade80;--in:#0f1b33}}
+:root[data-theme="dark"]{--bg:#0b1324;--card:#14223f;--line:#e9f0ff;--sh:#2f6fed;--tx:#f2f6ff;--mu:#9db0d0;--r:#ff7a66;--g:#4ade80;--in:#0f1b33}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-weight:500;max-width:520px;margin-inline:auto;padding-bottom:130px}
+.band{background:var(--b);color:#fff;border:3px solid var(--line);border-top:0;border-radius:0 0 34px 34px;padding:22px 20px 70px}
+.band.s{padding-bottom:26px}
+.band small{font-weight:700;opacity:.92;display:block}
+.band h1{font-size:32px;font-weight:800;letter-spacing:-1px;margin:2px 0 4px}
+.band h1 u{text-decoration:none;cursor:pointer;border-bottom:3px dashed #fff}
+.pad{padding:0 16px}
+.card{background:var(--card);border:3px solid var(--line);border-radius:24px;box-shadow:5px 5px 0 var(--sh);padding:16px;margin-bottom:18px}
+.saldo{margin-top:-52px;position:relative}
+.big{font-size:34px;font-weight:800;letter-spacing:-1px;margin:4px 0 8px;display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--b)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .big{color:#6ea2ff}}
+.mu{color:var(--mu);font-size:13px;font-weight:700}
+h2{font-size:17px;font-weight:800;margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 6px}
+.g{background:none;border:0;color:var(--tx);font:800 12px inherit;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;text-align:center}
+.g span{width:60px;height:60px;border:3px solid var(--line);border-radius:20px;display:grid;place-items:center;font-size:27px;box-shadow:3px 3px 0 var(--sh)}
+.g:active span{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--sh)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mini{border:3px solid var(--line);border-radius:18px;padding:10px 12px;color:#0d2233;font-weight:800;font-size:12px}
+.mini b{display:block;font-size:16px;margin-top:2px;overflow-wrap:anywhere}
+.btn{border:3px solid var(--line);background:var(--y);color:#0d2233;border-radius:14px;padding:10px 14px;font:800 14px inherit;font-family:inherit;box-shadow:3px 3px 0 var(--sh);cursor:pointer}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--sh)}
+.btn.s{padding:6px 10px;font-size:12px;box-shadow:2px 2px 0 var(--sh)}
+.btn.t{background:var(--t)}.btn.w{background:var(--card);color:var(--tx)}
+.chips{display:flex;gap:10px;overflow-x:auto;padding:4px 4px 12px;margin:0 -4px}
+.chip{flex:none;border:3px solid var(--line);background:var(--card);color:var(--tx);border-radius:999px;padding:8px 16px;font:800 14px inherit;font-family:inherit;cursor:pointer}
+.chip.on{background:var(--y);color:#0d2233}
+.row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:2px dashed color-mix(in srgb,var(--line) 30%,transparent)}
+.row:last-child{border:0}
+.ic{flex:none;width:46px;height:46px;border:3px solid var(--line);border-radius:14px;display:grid;place-items:center;font-size:22px;background:var(--t)}
+.row .m{flex:1;min-width:0}.row .m b{display:block;font-size:15px}.row .m span{color:var(--mu);font-size:12px;font-weight:700}
+.amt{font-weight:800;white-space:nowrap}.neg{color:var(--r)}.pos{color:var(--g)}
+.day{font-size:12px;font-weight:800;color:var(--mu);margin:14px 4px 8px;display:flex;justify-content:space-between;text-transform:uppercase}
+.bar{height:16px;border:3px solid var(--line);border-radius:99px;background:var(--in);overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:var(--t);border-right:3px solid var(--line)}
+.bar.r i{background:var(--y)}
+.empty{text-align:center;color:var(--mu);padding:26px 10px;font-weight:700}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center}
+nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(492px,calc(100% - 24px));display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--card);border:3px solid var(--line);border-radius:26px;box-shadow:5px 5px 0 var(--sh);padding:6px;z-index:5}
+nav button{border:3px solid transparent;background:none;border-radius:20px;padding:7px 2px;font:800 11px inherit;font-family:inherit;color:var(--mu);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+nav button span{font-size:22px}
+nav button.on{background:var(--y);color:#0d2233;border-color:var(--line)}
+#md{position:fixed;inset:0;background:rgba(3,8,18,.65);display:none;align-items:flex-end;justify-content:center;z-index:20}
+#md.on{display:flex}
+#sheet{background:var(--bg);border:3px solid var(--line);border-radius:26px 26px 0 0;width:min(520px,100%);padding:18px 16px calc(20px + env(safe-area-inset-bottom,0px));max-height:90%;overflow:auto}
+label{display:block;font-weight:800;font-size:13px;margin-bottom:10px}
+input,select,textarea{display:block;width:100%;margin-top:4px;border:3px solid var(--line);border-radius:14px;padding:11px 12px;font:600 16px inherit;font-family:inherit;background:var(--card);color:var(--tx)}
+#toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:var(--y);color:#0d2233;border:3px solid var(--line);border-radius:14px;padding:8px 14px;font-weight:800;font-size:13px;display:none;z-index:30;max-width:90%}
+</style>
+</head>
+<body>
+<header class="band" id="band"></header>
+<div class="pad" id="app"></div>
+<nav id="nav"></nav>
+<div id="md"><div id="sheet"><h2 id="mt"></h2><form id="mf"></form></div></div>
+<div id="toast"></div>
+<script>
+var S;try{S=JSON.parse(localStorage.getItem("aa-cf"))}catch(e){}
+S=S||{};S.tx=S.tx||[];S.goals=S.goals||[];S.debts=S.debts||[];S.name=S.name||"Aris";S.usd=S.usd||0;S.gold=S.gold||0;
+var tab="home",hide=false,mon=ym(new Date());
+var OUT={"Makanan & Minuman":"🍔","Transport":"🛵","Belanja":"🛍️","Tagihan":"💡","Hiburan":"🎮","Selfcare":"💆","Tabungan":"🐷","Hutang":"💸","Lainnya":"📦"};
+var INC={"Gaji":"💰","Usaha":"🏪","Bonus":"🎁","Piutang":"🤝","Lainnya":"✨"};
+var TABS=[["home","🏠","Beranda"],["tx","🧾","Mutasi"],["db","🤝","Hutang"],["sv","🐷","Tabungan"]];
+function ym(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")}
+function today(){var d=new Date();return ym(d)+"-"+String(d.getDate()).padStart(2,"0")}
+function save(){try{localStorage.setItem("aa-cf",JSON.stringify(S))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function rp(n){return "Rp"+Math.round(n).toLocaleString("id-ID")}
+function hid(n){return hide?"Rp••••••":rp(n)}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
+function toast(t){var e=document.getElementById("toast");e.textContent=t;e.style.display="block";setTimeout(function(){e.style.display="none"},2800)}
+function sum(a,f){return a.reduce(function(s,x){return s+(f?f(x):x)},0)}
+function net(t){return t.type==="in"?t.amt:-t.amt}
+function monthList(){var o=[],d=new Date();for(var i=5;i>=0;i--)o.push(ym(new Date(d.getFullYear(),d.getMonth()-i,1)));S.tx.forEach(function(t){var m=t.date.slice(0,7);if(o.indexOf(m)<0)o.push(m)});return o.sort()}
+function mname(m,full){var p=m.split("-");return new Date(p[0],p[1]-1,1).toLocaleDateString("id-ID",full?{month:"long",year:"numeric"}:{month:"short",year:"numeric"})}
+function chips(){return "<div class=\"chips\">"+monthList().map(function(m){return "<button class=\"chip"+(m===mon?" on":"")+"\" onclick=\"mon='"+m+"';render()\">"+mname(m)+"</button>"}).join("")+"</div>"}
+function form(title,fields,cb,btn){
+  document.getElementById("mt").textContent=title;
+  var f=document.getElementById("mf");
+  f.innerHTML=fields.map(function(x){var v=x.v==null?"":x.v;return "<label>"+esc(x.l)+(x.o?"<select name=\""+x.k+"\">"+x.o.map(function(o){return "<option"+(o===x.v?" selected":"")+">"+esc(o)+"</option>"}).join("")+"</select>":x.t==="area"?"<textarea name=\""+x.k+"\" rows=\"5\"></textarea>":"<input name=\""+x.k+"\" type=\""+(x.t||"text")+"\" value=\""+esc(v)+"\""+(x.t==="number"?" inputmode=\"decimal\" min=\"0\" step=\"any\"":"")+" autocomplete=\"off\">")+"</label>"}).join("")+"<div class=\"acts\"><button class=\"btn\" type=\"submit\">"+(btn||"Simpan")+"</button><button class=\"btn w\" type=\"button\" onclick=\"closeM()\">Batal</button></div>";
+  f.onsubmit=function(e){e.preventDefault();var v={};fields.forEach(function(x){v[x.k]=f.elements[x.k].value});if(cb(v)!==false)closeM()};
+  var ty=f.elements.type,ct=f.elements.cat;
+  if(ty&&ct)ty.onchange=function(){var c=ty.value==="Pemasukan"?INC:OUT;ct.innerHTML=Object.keys(c).map(function(k){return "<option>"+esc(k)+"</option>"}).join("")};
+  document.getElementById("md").classList.add("on");
+}
+function closeM(){document.getElementById("md").classList.remove("on")}
+function addTx(type){
+  var inc=type==="in";
+  form(inc?"Catat pemasukan":"Catat pengeluaran",[{k:"type",l:"Jenis",o:["Pengeluaran","Pemasukan"],v:inc?"Pemasukan":"Pengeluaran"},{k:"amt",l:"Jumlah (Rp)",t:"number"},{k:"cat",l:"Kategori",o:Object.keys(inc?INC:OUT)},{k:"note",l:"Catatan (opsional)"},{k:"date",l:"Tanggal",t:"date",v:today()}],function(v){
+    var a=+v.amt;if(!(a>0)){toast("Isi jumlahnya dulu ya");return false}
+    S.tx.push({id:uid(),type:v.type==="Pemasukan"?"in":"out",cat:v.cat,amt:a,note:v.note,date:v.date||today()});mon=(v.date||today()).slice(0,7);save();render()});
+}
+function delItem(kind,id){form("Hapus data ini?",[],function(){S[kind]=S[kind].filter(function(x){return x.id!==id});save();render()},"Ya, hapus")}
+function addGoal(){form("Target tabungan baru",[{k:"emo",l:"Emoji",v:"🎯"},{k:"name",l:"Nama target (mis. HP baru)"},{k:"target",l:"Target (Rp)",t:"number"}],function(v){if(!v.name||!(+v.target>0)){toast("Nama dan target wajib diisi");return false}S.goals.push({id:uid(),emo:v.emo||"🎯",name:v.name,target:+v.target,saved:0});save();tab="sv";render()})}
+function setor(id){var g=S.goals.find(function(x){return x.id===id});form("Setor ke "+g.name,[{k:"amt",l:"Jumlah setoran (Rp)",t:"number"}],function(v){var a=+v.amt;if(!(a>0))return false;g.saved+=a;S.tx.push({id:uid(),type:"out",cat:"Tabungan",amt:a,note:"Setor: "+g.name,date:today()});save();render()})}
+function addDebt(){form("Catat hutang / piutang",[{k:"kind",l:"Jenis",o:["Hutang saya","Piutang (orang hutang ke saya)"]},{k:"name",l:"Nama orang / pihak"},{k:"total",l:"Total (Rp)",t:"number"},{k:"due",l:"Jatuh tempo",t:"date"}],function(v){if(!v.name||!(+v.total>0)){toast("Nama dan total wajib diisi");return false}S.debts.push({id:uid(),kind:v.kind[0]==="H"?"hutang":"piutang",name:v.name,total:+v.total,paid:0,due:v.due});save();tab="db";render()})}
+function bayar(id){var d=S.debts.find(function(x){return x.id===id}),sisa=d.total-d.paid;form(d.kind==="hutang"?"Bayar cicilan "+d.name:"Terima pembayaran "+d.name,[{k:"amt",l:"Jumlah (Rp)",t:"number",v:sisa}],function(v){var a=Math.min(+v.amt,sisa);if(!(a>0))return false;d.paid+=a;S.tx.push({id:uid(),type:d.kind==="hutang"?"out":"in",cat:d.kind==="hutang"?"Hutang":"Piutang",amt:a,note:(d.kind==="hutang"?"Bayar hutang: ":"Terima piutang: ")+d.name,date:today()});save();render()})}
+function editName(){form("Nama panggilan",[{k:"n",l:"Nama",v:S.name}],function(v){S.name=v.n.trim()||"Aris";save();render()})}
+function editKurs(){form("Kurs & harga emas (manual)",[{k:"usd",l:"Kurs 1 USD (Rp)",t:"number",v:S.usd||""},{k:"gold",l:"Emas Antam 1 gram (Rp)",t:"number",v:S.gold||""}],function(v){S.usd=+v.usd||0;S.gold=+v.gold||0;save();render()})}
+function vTxList(all){
+  if(!all.length)return "<div class=\"card empty\">Belum ada transaksi di "+mname(mon,1)+" 🫥</div>";
+  var days={},h="";all.forEach(function(t){(days[t.date]=days[t.date]||[]).push(t)});
+  Object.keys(days).sort().reverse().forEach(function(d){
+    var n=sum(days[d],net);
+    h+="<div class=\"day\"><span>"+new Date(d+"T00:00").toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"})+"</span><span>"+(n<0?"−":"")+rp(Math.abs(n))+"</span></div><div class=\"card\">";
+    days[d].forEach(function(t){h+="<div class=\"row\"><div class=\"ic\" style=\"background:"+(t.type==="in"?"var(--y)":"var(--t)")+";color:#0d2233\">"+((t.type==="in"?INC:OUT)[t.cat]||"📦")+"</div><div class=\"m\"><b>"+esc(t.cat)+"</b><span>"+esc(t.note||"—")+"</span></div><div class=\"amt "+(t.type==="in"?"pos":"neg")+"\">"+(t.type==="in"?"+":"−")+rp(t.amt)+"</div><button class=\"btn w s\" onclick=\"delItem('tx','"+t.id+"')\" aria-label=\"Hapus\">✕</button></div>"});
+    h+="</div>"});
+  return h;
+}
+function vHome(){
+  var saldo=sum(S.tx,net),all=S.tx.filter(function(t){return t.date.slice(0,7)===ym(new Date())}),
+  inn=sum(all.filter(function(t){return t.type==="in"}),function(t){return t.amt}),out=sum(all.filter(function(t){return t.type==="out"}),function(t){return t.amt}),sv=sum(S.goals,function(g){return g.saved});
+  var G=[["#5ce1d0","⬇️","Pemasukan","addTx('in')"],["#ff8fb8","⬆️","Pengeluaran","addTx('out')"],["#fbbf24","🤝","Hutang","tab='db';render()"],["#ff8fb8","🐷","Tabungan","tab='sv';render()"],["#5ce1d0","🧾","Mutasi","tab='tx';render()"],["#fbbf24","📊","Excel","exp()"],["#5ce1d0","💾","Cadangan","backup()"],["#ff8fb8","💱","Kurs & Emas","editKurs()"]];
+  var h="<div class=\"card saldo\"><div class=\"mu\">Saldo</div><div class=\"big\"><span>"+hid(saldo)+"</span><button class=\"btn w s\" onclick=\"hide=!hide;render()\" aria-label=\"Tampilkan atau sembunyikan saldo\">"+(hide?"🙈":"👁️")+"</button></div><div class=\"mu\">Pemasukan dikurangi pengeluaran dan uang yang ditabung</div></div>";
+  h+="<div class=\"card\"><div class=\"grid\">"+G.map(function(g){return "<button class=\"g\" onclick=\""+g[3]+"\"><span style=\"background:"+g[0]+"\">"+g[1]+"</span>"+g[2]+"</button>"}).join("")+"</div></div>";
+  h+="<div class=\"card\"><div class=\"duo\"><div><div class=\"mu\">Kurs 1 USD</div><div class=\"big\" style=\"font-size:22px;margin:2px 0\">"+(S.usd?rp(S.usd):"—")+"</div>"+(S.usd?"<div class=\"mu\">Saldo ≈ US$"+(saldo/S.usd).toFixed(2)+"</div>":"")+"</div><div><div class=\"mu\">Emas Antam 1 gram</div><div class=\"big\" style=\"font-size:22px;margin:2px 0\">"+(S.gold?rp(S.gold):"—")+"</div>"+(S.gold?"<div class=\"mu\">Tabungan ≈ "+(sv/S.gold).toFixed(2)+" gram</div>":"")+"</div></div>"+(S.usd||S.gold?"":"<div class=\"acts\"><button class=\"btn s t\" onclick=\"editKurs()\">Isi manual</button></div>")+"</div>";
+  var cats={};all.filter(function(t){return t.type==="out"}).forEach(function(t){cats[t.cat]=(cats[t.cat]||0)+t.amt});
+  var ks=Object.keys(cats).sort(function(a,b){return cats[b]-cats[a]}).slice(0,4);
+  h+="<div class=\"card\"><h2>Bulan ini · "+mname(ym(new Date()),1)+"</h2><div class=\"duo\"><div class=\"mini\" style=\"background:var(--y)\">↓ Pemasukan<b>"+hid(inn)+"</b></div><div class=\"mini\" style=\"background:var(--t)\">↑ Pengeluaran<b>"+hid(out)+"</b></div></div>"+(ks.length?"<div style=\"margin-top:10px\">"+ks.map(function(k){var p=cats[k]/out*100;return "<div class=\"row\" style=\"border:0;padding:4px 0 0\"><div class=\"m\"><b>"+(OUT[k]||"📦")+" "+esc(k)+"</b></div><div class=\"amt\">"+Math.round(p)+"%</div></div><div class=\"bar r\"><i style=\"width:"+p+"%\"></i></div>"}).join("")+"</div>":"")+"</div>";
+  return h;
+}
+function vTx(){
+  var all=S.tx.filter(function(t){return t.date.slice(0,7)===mon}).sort(function(a,b){return a.date<b.date?1:-1}),
+  inn=sum(all.filter(function(t){return t.type==="in"}),function(t){return t.amt}),out=sum(all.filter(function(t){return t.type==="out"}),function(t){return t.amt});
+  return "<div style=\"margin-top:16px\">"+chips()+"</div><div class=\"card\"><div class=\"duo\"><div class=\"mini\" style=\"background:var(--y)\">↓ Pemasukan<b>"+hid(inn)+"</b></div><div class=\"mini\" style=\"background:var(--t)\">↑ Pengeluaran<b>"+hid(out)+"</b></div></div><div class=\"acts\"><button class=\"btn\" onclick=\"addTx('in')\">+ Pemasukan</button><button class=\"btn t\" onclick=\"addTx('out')\">+ Pengeluaran</button></div></div>"+vTxList(all);
+}
+function vSv(){
+  var h="<div class=\"card\" style=\"margin-top:16px\"><div class=\"mu\">Total tabungan terkumpul</div><div class=\"big\">"+hid(sum(S.goals,function(g){return g.saved}))+"</div><button class=\"btn\" onclick=\"addGoal()\">+ Target baru</button></div>";
+  if(!S.goals.length)return h+"<div class=\"card empty\">Belum ada target 🐷<br>Mulai dari yang kecil dulu, yang penting konsisten.</div>";
+  S.goals.forEach(function(g){var p=Math.min(100,g.saved/g.target*100);
+    h+="<div class=\"card\"><div class=\"row\" style=\"border:0;padding:0\"><div class=\"ic\" style=\"color:#0d2233\">"+esc(g.emo)+"</div><div class=\"m\"><b>"+esc(g.name)+"</b><span>"+rp(g.saved)+" dari "+rp(g.target)+"</span></div><div class=\"amt\">"+Math.round(p)+"%</div></div><div class=\"bar\"><i style=\"width:"+p+"%\"></i></div><div class=\"acts\"><button class=\"btn t s\" onclick=\"setor('"+g.id+"')\">+ Setor</button><button class=\"btn w s\" onclick=\"delItem('goals','"+g.id+"')\">Hapus</button>"+(p>=100?"<span class=\"amt pos\">🎉 Tercapai!</span>":"")+"</div></div>"});
+  return h;
+}
+function vDb(){
+  var hu=S.debts.filter(function(d){return d.kind==="hutang"}),pi=S.debts.filter(function(d){return d.kind==="piutang"}),sisa=function(a){return sum(a,function(d){return d.total-d.paid})};
+  var h="<div class=\"card\" style=\"margin-top:16px\"><div class=\"duo\"><div class=\"mini\" style=\"background:var(--y)\">Hutang saya<b>"+hid(sisa(hu))+"</b></div><div class=\"mini\" style=\"background:var(--t)\">Piutang<b>"+hid(sisa(pi))+"</b></div></div><div class=\"acts\"><button class=\"btn\" onclick=\"addDebt()\">+ Catat baru</button></div></div>";
+  if(!S.debts.length)return h+"<div class=\"card empty\">Bebas hutang 🕊️<br>Catat kalau ada pinjaman atau yang pinjam ke kamu.</div>";
+  S.debts.forEach(function(d){var p=Math.min(100,d.paid/d.total*100),ov=d.due&&d.due<today()&&d.paid<d.total;
+    h+="<div class=\"card\"><div class=\"row\" style=\"border:0;padding:0\"><div class=\"ic\" style=\"background:"+(d.kind==="hutang"?"var(--y)":"var(--t)")+";color:#0d2233\">"+(d.kind==="hutang"?"💸":"🤝")+"</div><div class=\"m\"><b>"+esc(d.name)+"</b><span>"+(d.kind==="hutang"?"Hutang saya":"Piutang")+(d.due?" · tempo "+d.due:"")+(ov?" · ⚠️ lewat":"")+"</span></div><div class=\"amt\">"+rp(d.total-d.paid)+"</div></div><div class=\"bar r\"><i style=\"width:"+p+"%\"></i></div><span class=\"mu\">Terbayar "+rp(d.paid)+" dari "+rp(d.total)+"</span><div class=\"acts\">"+(d.paid<d.total?"<button class=\"btn t s\" onclick=\"bayar('"+d.id+"')\">"+(d.kind==="hutang"?"Bayar":"Terima")+"</button>":"<span class=\"amt pos\">✅ Lunas</span>")+"<button class=\"btn w s\" onclick=\"delItem('debts','"+d.id+"')\">Hapus</button></div></div>"});
+  return h;
+}
+function render(){
+  var T={home:"Halo, <u onclick=\"editName()\">"+esc(S.name)+"</u>",tx:"Mutasi",db:"Hutang & Piutang",sv:"Tabungan"};
+  var b=document.getElementById("band");b.className="band"+(tab==="home"?"":" s");
+  b.innerHTML="<small>"+(tab==="home"?"Selamat datang":"Duitku")+"</small><h1>"+T[tab]+"</h1><small>Tersimpan di perangkat ini</small>";
+  document.getElementById("app").innerHTML={home:vHome,tx:vTx,sv:vSv,db:vDb}[tab]();
+  document.getElementById("nav").innerHTML=TABS.map(function(t){return "<button class=\""+(t[0]===tab?"on":"")+"\" onclick=\"tab='"+t[0]+"';render();scrollTo(0,0)\"><span>"+t[1]+"</span>"+t[2]+"</button>"}).join("");
+}
+function saveFile(name,blob){var u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000)}
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+async function exp(){
+  try{
+    if(typeof XLSX==="undefined"){toast("Library Excel gagal dimuat");return}
+        var wb=XLSX.utils.book_new(),mm={};
+    var tx=S.tx.slice().sort(function(a,b){return a.date<b.date?-1:1}).map(function(t){return{Tanggal:t.date,Jenis:t.type==="in"?"Pemasukan":"Pengeluaran",Kategori:t.cat,Catatan:t.note||"",Jumlah:t.amt}});
+    S.tx.forEach(function(t){var m=t.date.slice(0,7);mm[m]=mm[m]||{Bulan:m,Pemasukan:0,Pengeluaran:0,Sisa:0};if(t.type==="in")mm[m].Pemasukan+=t.amt;else mm[m].Pengeluaran+=t.amt;mm[m].Sisa=mm[m].Pemasukan-mm[m].Pengeluaran});
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(tx.length?tx:[{Info:"Belum ada data"}]),"Mutasi");
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Object.keys(mm).sort().map(function(k){return mm[k]})),"Ringkasan Bulanan");
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.goals.map(function(g){return{Target:g.name,Terkumpul:g.saved,Target_Rp:g.target,Sisa:g.target-g.saved}})),"Tabungan");
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.debts.map(function(d){return{Jenis:d.kind==="hutang"?"Hutang":"Piutang",Nama:d.name,Total:d.total,Terbayar:d.paid,Sisa:d.total-d.paid,Jatuh_Tempo:d.due||""}})),"Hutang & Piutang");
+    var out=XLSX.write(wb,{bookType:"xlsx",type:"array"});
+    saveFile("duitku-cashflow.xlsx",new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  }catch(e){toast("Ekspor gagal, coba lagi")}
+}
+function backup(){
+  form("Cadangan data",[],function(){return false},"Tutup");
+  var f=document.getElementById("mf");
+  f.insertAdjacentHTML("afterbegin","<div class=\"acts\" style=\"margin-bottom:14px\"><button class=\"btn t\" type=\"button\" onclick=\"doBackup()\">⬇️ Unduh cadangan (.json)</button></div><label>Pulihkan: pilih file cadangan<input type=\"file\" accept=\".json,application/json\" onchange=\"fileRestore(this)\"></label><label>Atau tempel isi file cadangan<textarea id=\"rs\" rows=\"4\"></textarea></label><div class=\"acts\" style=\"margin-bottom:14px\"><button class=\"btn w\" type=\"button\" onclick=\"doRestore()\">Pulihkan data</button></div>");
+}
+function doBackup(){try{saveFile("duitku-cadangan-"+today()+".json",new Blob([JSON.stringify(S)],{type:"application/json"}))}catch(e){toast("Cadangan gagal")}}
+function fileRestore(i){var f=i.files[0];if(!f)return;var r=new FileReader();r.onload=function(){document.getElementById("rs").value=r.result;doRestore()};r.readAsText(f)}
+function doRestore(){try{var d=JSON.parse(document.getElementById("rs").value);if(!Array.isArray(d.tx))throw 0;S={tx:d.tx,goals:d.goals||[],debts:d.debts||[],name:d.name||"Aris",usd:+d.usd||0,gold:+d.gold||0};save();closeM();render();toast("Data berhasil dipulihkan")}catch(e){toast("Isi cadangan tidak valid")}}
+render();
+</script>
+</body>
+</html>
